@@ -1,0 +1,26 @@
+{
+  "api": {
+    "base_url": "http://192.168.1.128:8080/vbs",
+    "endpoints": {
+      "add_visitor": "/addvisitor",
+      "get_device_info": "/devices",
+      "get_company_info": "/companies"
+    }
+  },
+  "app_settings": {
+    "maintenance_mode": false,
+    "min_required_version": "1.0.0",
+    "current_version": "1.0.0",
+    "force_update": false,
+    "maintenance_title": "Under Maintenance",
+    "maintenance_message": "We'll be back soon!",
+    "update_title": "Update Required",
+    "update_message": "A new version of the app is available. Please update to continue using the app."
+  },
+  "ui_settings": {
+    "primary_color": "#2196F3"
+  },
+  "timeouts": {
+    "api_request": 30
+  }
+}

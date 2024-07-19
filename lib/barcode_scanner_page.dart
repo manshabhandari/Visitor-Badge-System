@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'user_info.dart';
-import 'main.dart'; // Import the main.dart file
-// Import the intl package for date parsing
+import 'main.dart';
 
 class BarcodeScannerPage extends StatefulWidget {
   final String? badgeExpiry;
@@ -92,8 +91,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
         _showTickMark = true;
         _barcodeRect = barcode.boundingBox;
       });
-      await Future.delayed(
-          const Duration(seconds: 1)); // Show tick mark for 1 second
+      await Future.delayed(const Duration(seconds: 1));
       _parseAAMVAData(barcode.rawValue);
     } else {
       setState(() {
@@ -161,7 +159,6 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
     address += ", $city, $postalCode";
 
     if (firstName.isNotEmpty && lastName.isNotEmpty) {
-      // Check if the ID has expired
       if (_isIdExpired(expiryDate)) {
         _showExpirationAlert();
       } else {
@@ -194,7 +191,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
 
   String _formatDate(String dateString) {
     if (dateString.length != 8) {
-      return dateString; // Return original string if it's not in the expected format
+      return dateString;
     }
     return "${dateString.substring(0, 2)}/${dateString.substring(2, 4)}/${dateString.substring(4)}";
   }
@@ -209,13 +206,11 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
     }
 
     try {
-      // Parse the date string
       List<String> parts = expiryDate.split('/');
       int month = int.parse(parts[0]);
       int day = int.parse(parts[1]);
       int year = int.parse(parts[2]);
 
-      // Create a DateTime object
       final parsedDate = DateTime(year, month, day);
       print("Successfully parsed date: $parsedDate");
 

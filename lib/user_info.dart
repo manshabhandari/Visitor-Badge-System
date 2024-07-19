@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'camera.dart';
+import 'config_manager.dart';
 
 class UserInfoPage extends StatefulWidget {
   final String firstName;
@@ -82,7 +83,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
 
   Future<void> addVisitor() async {
-    final url = Uri.parse('http://192.168.1.128:8080/vbs/addvisitor');
+    final url = Uri.parse(
+        '${ConfigManager.apiBaseUrl}${ConfigManager.addVisitorEndpoint}');
     final requestBody = jsonEncode(<String, dynamic>{
       'id': 0,
       'first_name': firstName,
@@ -105,13 +107,15 @@ class _UserInfoPageState extends State<UserInfoPage> {
     });
 
     try {
-      final response = await http.post(
-        url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: requestBody,
-      );
+      final response = await http
+          .post(
+            url,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: requestBody,
+          )
+          .timeout(Duration(seconds: ConfigManager.apiRequestTimeout));
 
       if (response.statusCode == 200) {
         print('Visitor inserted successfully');
@@ -209,7 +213,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ConfigManager.primaryColor,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(

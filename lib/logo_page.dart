@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'barcode_scanner_page.dart';
+import 'config_manager.dart';
 
 class LogoPage extends StatefulWidget {
   final String? companyName;
@@ -34,7 +35,6 @@ class _LogoPageState extends State<LogoPage> {
   void checkBadgeExpiry() {
     if (widget.badgeExpiry != null) {
       try {
-        // Assume the expiry is for today
         final now = DateTime.now();
         final todayDate =
             "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
@@ -65,7 +65,6 @@ class _LogoPageState extends State<LogoPage> {
         }
       } catch (e) {
         print('Error parsing badge expiry date: $e');
-        // Optionally, show an error message to the user
       }
     }
   }
@@ -74,7 +73,6 @@ class _LogoPageState extends State<LogoPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // This will disable the back button and prevent navigation
         return false;
       },
       child: Scaffold(
@@ -114,7 +112,7 @@ class _LogoPageState extends State<LogoPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ConfigManager.primaryColor,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(

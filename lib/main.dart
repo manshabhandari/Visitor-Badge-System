@@ -5,10 +5,15 @@ import 'dart:convert';
 import 'logo_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
+import 'dart:async';
+import 'config_manager.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FaceCamera.initialize();
+  await ConfigManager.initialize();
   runApp(MyApp());
 }
 
@@ -21,7 +26,115 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SignInPage(),
+      home: FutureBuilder<Widget>(
+        future: _checkVersionAndBuildHome(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return snapshot.data ?? SignInPage();
+          }
+          return CircularProgressIndicator();
+        },
+      ),
+    );
+  }
+
+  Future<Widget> _checkVersionAndBuildHome() async {
+    if (ConfigManager.maintenanceMode) {
+      return MaintenancePage();
+    }
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String currentVersion = packageInfo.version;
+
+    if (ConfigManager.needsForceUpdate) {
+      return UpdatePage();
+    }
+
+    return SignInPage();
+  }
+}
+
+class MaintenancePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.build, size: 80, color: Colors.grey),
+            SizedBox(height: 20),
+            Text(
+              ConfigManager.maintenanceTitle,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              ConfigManager.maintenanceMessage,
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+              child: Text('OK'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UpdatePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.system_update, size: 80, color: Colors.blue),
+            SizedBox(height: 20),
+            Text(
+              ConfigManager.updateTitle,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              ConfigManager.updateMessage,
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+              child: Text('Okay'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                textStyle: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -80,11 +193,13 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<bool> getDeviceInfo() async {
     final url =
-        'http://192.168.1.128:8080/vbs/devices/${_serialNumberController.text}';
+        '${ConfigManager.apiBaseUrl}${ConfigManager.getDeviceInfoEndpoint}/${_serialNumberController.text}';
     print('Calling Device API: $url');
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(Duration(seconds: ConfigManager.apiRequestTimeout));
 
       print('Device API Response Status Code: ${response.statusCode}');
       print('Device API Response Body: ${response.body}');
@@ -123,11 +238,14 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<bool> getCompanyInfo() async {
-    final url = 'http://192.168.1.128:8080/vbs/companies/$companyId';
+    final url =
+        '${ConfigManager.apiBaseUrl}${ConfigManager.getCompanyInfoEndpoint}/$companyId';
     print('Calling Company API: $url');
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(Duration(seconds: ConfigManager.apiRequestTimeout));
 
       print('Company API Response Status Code: ${response.statusCode}');
       print('Company API Response Body: ${response.body}');
@@ -272,7 +390,7 @@ class _SignInPageState extends State<SignInPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ConfigManager.primaryColor,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(

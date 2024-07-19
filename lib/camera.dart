@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:face_camera/face_camera.dart';
 import 'badge_page.dart';
+import 'config_manager.dart';
 
 class CameraPage extends StatefulWidget {
   final String firstName;
@@ -43,6 +44,7 @@ class _CameraPageState extends State<CameraPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Take Your Photo'),
+        backgroundColor: ConfigManager.primaryColor,
       ),
       body: Center(
         child: Builder(builder: (context) {
@@ -54,7 +56,8 @@ class _CameraPageState extends State<CameraPage> {
                   width: 300,
                   height: 400,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue, width: 2),
+                    border:
+                        Border.all(color: ConfigManager.primaryColor, width: 2),
                   ),
                   child: Image.file(
                     _capturedImage!,
@@ -72,7 +75,7 @@ class _CameraPageState extends State<CameraPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ConfigManager.primaryColor,
                       ),
                       child: const Text('Retake Photo'),
                     ),
@@ -92,7 +95,7 @@ class _CameraPageState extends State<CameraPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
+                        backgroundColor: ConfigManager.primaryColor,
                       ),
                       child: const Text('Continue'),
                     ),
@@ -105,7 +108,7 @@ class _CameraPageState extends State<CameraPage> {
             width: 300,
             height: 400,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.blue, width: 2),
+              border: Border.all(color: ConfigManager.primaryColor, width: 2),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),

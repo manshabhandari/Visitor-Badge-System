@@ -188,6 +188,9 @@ class _BadgePageState extends State<BadgePage> {
             await decodeImageFromList(pngBytes.buffer.asUint8List()));
         print("Composite image printed");
 
+        // Show success dialog
+        await _showPrintSuccessDialog();
+
         // Navigate to SignInPage after successful printing
         Navigator.pushReplacement(
           context,
@@ -317,7 +320,6 @@ class _BadgePageState extends State<BadgePage> {
                     ? () {
                         print("Print Badge button pressed");
                         _printBadge();
-                        _showPrintSuccessDialog();
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

@@ -8,6 +8,7 @@
     }
   },
   "app_settings": {
+    "app_title": "Visitor Badge System",
     "maintenance_mode": false,
     "min_required_version": "1.0.0",
     "current_version": "1.0.0",

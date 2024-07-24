@@ -1,6 +1,6 @@
 {
   "api": {
-    "base_url": "http://192.168.1.128:8080/vbs",
+    "base_url": "http://192.168.1.89:8080/vbs",
     "endpoints": {
       "add_visitor": "/addvisitor",
       "get_device_info": "/devices",
